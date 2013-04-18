@@ -1,0 +1,208 @@
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Random;
+
+
+import javax.swing.*;
+
+public class Graphics implements MouseListener {
+	static Random ahv = new Random();
+	static JActionCard activeAction;
+		
+	static String path1 = "src/img/bg.jpg";
+	static String path2 = "src/img/lane1.png";
+	static String path3 = "src/img/action.png";
+	static String path4 = "src/img/vkaart2.png";
+	static String path5 = "src/img/action_active.png";
+	static String path6 = "src/img/slot1.png";
+	static String path7 = "src/img/player.png";
+	static String path8 = "src/img/cube.png";
+	static String path9 = "src/img/manofwar.png";
+	static String path10 = "src/img/cube.png";
+	
+	
+	
+	static ImageIcon icon1 = new ImageIcon(path1); //bg.jpg
+	static ImageIcon icon2 = new ImageIcon(path2); //lane.png
+	static ImageIcon icon3 = new ImageIcon(path3); //action.png
+	static ImageIcon icon4 = new ImageIcon(path4); //vkaart.png
+	static ImageIcon icon5 = new ImageIcon(path5); //action_active.png
+	static ImageIcon icon6 = new ImageIcon(path6); //slot.png
+	static ImageIcon icon7 = new ImageIcon(path7); //plyer.png
+	static ImageIcon icon8 = new ImageIcon(path8); //cube.png
+	static ImageIcon icon9 = new ImageIcon(path9); //manofwar.png
+	static ImageIcon icon10 = new ImageIcon(path10); //barrel.png
+	
+	
+	static JLabel[] action = new JLabel[12];
+	static JLabel[] hand = new JLabel[9];
+	
+	static JLabel[] shieldR = new JLabel[3];
+	static JLabel[] shieldW = new JLabel[3];
+	static JLabel[] shieldB = new JLabel[3];
+	static JLabel[] reactorR = new JLabel[3];
+	static JLabel[] reactorW = new JLabel[5];
+	static JLabel[] reactorB = new JLabel[3];
+	static JLabel[] energyBarrel = new JLabel[3]; 
+	static JLabel[] vkaart = new JLabel[8];
+	static JLabel[] skaart = new JLabel[8];
+	
+	public static JFrame raam;
+	
+	public static void main(String[] args){
+		
+				
+		raam = new JFrame("Raam");
+		//JPanel panel =new JPanel();
+		//panel.setLayout(null);
+		
+		raam.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		raam.setSize(1280, 800);
+		//raam.setLayout(new FlowLayout());
+		raam.setLayout(null);
+		
+		JPlayer red = new JPlayer(icon7, 0, 620, 160);
+		
+		JLabel bg = new JLabel(icon1);
+		
+		JLabel[] lane = new JLabel[4];
+		
+		
+		
+		lane = addPicture(lane, icon2);
+		hand = addPictureAC(hand, icon3);
+		action = addPicture(action, icon6);
+		vkaart = addPicture(vkaart, icon4);
+		
+		//lane-id vasakule
+		for (int i = 0; i < 4; i++){
+			raam.add(lane[i]);
+			lane[i].setBounds(5 + i*55, 5, 50, 588);
+		}
+		
+		//action-id alla
+		int pad = 0;
+		for (int i = 0; i < action.length; i++){
+			if (i == 3 || i == 7) pad +=10;
+			raam.add(action[i]);
+			action[i].setBounds(5+i*55+pad, 600, 50, 80);
+			action[i].addMouseListener(new SlotListener());
+			
+		}
+		
+		//käsi alla
+		for (int i = 0; i < hand.length; i++){
+			raam.add(hand[i]);
+			hand[i].setBounds(50+40+pad+25+55*11+5+5+i*55, 600, 50, 80);
+			hand[i].addMouseListener(new JActionCard());
+		}
+		
+		//saabuvad sõbrad paremale
+		int k = 0;
+		for (int i = 0; i < 4; i++){
+			for (int j = 0; j < 2; j++){
+				raam.add(vkaart[k]);
+				vkaart[k].setBounds(1030+5+j*105, 5+i*(143+5), 100, 143);
+				vkaart[k].addMouseListener(new JMonster());
+				k++;
+			}
+		}
+		
+		//suured sõbrad
+		for (int i = 0; i < 8; i++){
+			skaart[i] = new JMonster(icon9, "Man-of-War");
+			skaart[i].setBounds(0, 0, 356, 600);
+			
+		}
+		raam.add(new JLabel());
+		raam.add(bg);
+		bg.setBounds(230, 5, 800, 588);
+		raam.setVisible(true);
+		
+	}
+	
+	public static JLabel[] addPicture(JLabel[] lable, ImageIcon icon){
+		for (int i = 0; i < lable.length; i++){
+			lable[i] = new JLabel(icon);
+		}
+		return lable;
+	}
+	public static JLabel[] addPictureAC(JLabel[] lable, ImageIcon icon){
+		for (int i = 0; i < lable.length; i++){
+			lable[i] = new JActionCard(icon);
+		}
+		return lable;
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		System.out.println(((JActionCard) arg0.getComponent()).getActionType());
+		((JActionCard) arg0.getComponent()).setIcon(icon5);
+		
+		
+		
+	}
+	
+	static void swapList(JLabel[] lista, JLabel[] listb, JLabel a, JLabel b){
+		int x = a.getX();
+		int y = a.getY();
+		a.setLocation(b.getX(), b.getY());
+		b.setLocation(x, y);
+		
+		x = -1;
+		y = -1;
+		
+		for (int i = 0; i < lista.length; i++){
+			if (lista[i] == a){
+				x = i;				
+			}
+			else if (lista[i] == b){
+				y = i;
+			}
+		}
+		if (x != -1) {
+			lista[x] = b;
+		}
+		else {
+			for (int i = 0; i < listb.length; i++){
+				if (listb[i] == a){
+					listb[i] = b;
+				}
+			}
+		}
+		if (y != -1){
+			lista[y] = a;
+		}
+		else {
+			for (int i = 0; i < listb.length; i++){
+				if (listb[i] == b){
+					listb[i] = a;
+				}
+			}
+		}
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		
+		
+	}
+}
