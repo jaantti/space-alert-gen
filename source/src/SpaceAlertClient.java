@@ -146,7 +146,7 @@ public class SpaceAlertClient implements Runnable{
 				}
 				
 				try {
-					int sec = (int)fromServer;
+					int sec = (Integer)fromServer;
 					try {
 						Graphics.raam.remove(Graphics.clock);
 					} catch (NullPointerException e){}
